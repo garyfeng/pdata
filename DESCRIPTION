@@ -5,7 +5,7 @@ Version: 0.1
 Date: 2015-09-19
 Author: person("Gary", "Feng", email = "gary.feng@gmail.com",
                   role = c("aut", "cre"))
-Maintainer: Gary Feng "gary.feng@gmail.com"
+Maintainer: Gary Feng <gary.feng@gmail.com>
 Description: This library is a collection of data specifications and functions for importing, visualizing, analyzing, and reporting process data collected as part of large scale educational assessments.
 License: GPL v3
 LazyData: TRUE
