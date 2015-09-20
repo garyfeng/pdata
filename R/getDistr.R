@@ -7,18 +7,17 @@
 #' library "muhaz" and other methods.
 #'
 #' @param df The observed response time, either as a vector or a data frame
-#' @param timeVar [optional] The name of the RT variable if df is a data frame
-#'    Useful when using the %>% pipeline.
-#' @param binwidth [optional] The width of the bin used to computer statistics; in msec.
-#' @param maxtime [unused]
-#' @param mintime [unused]
+#' @param timeVar (Optional) The name of the RT variable if df is a data frame
+#'    Useful when using the pipeline.
+#' @param binwidth (optional) The width of the bin used to computer statistics; in msec.
+#'
 #' @return a data frame of distributional statistics such as the pdf, hazard rate, counts, etc.
 #'
 #' @export
 #'
 #'
 
-getDistr <-function (df, timeVar="t", binwidth=50, maxtime=10000, mintime=0) {
+getDistr <-function (df, timeVar="t", binwidth=50) {
   require(muhaz)
 
   if(is.data.frame(df)) {

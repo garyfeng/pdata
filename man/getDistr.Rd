@@ -4,19 +4,15 @@
 \alias{getDistr}
 \title{To compute the empirical density function and hazard rate of response time}
 \usage{
-getDistr(df, timeVar = "t", binwidth = 50, maxtime = 10000, mintime = 0)
+getDistr(df, timeVar = "t", binwidth = 50)
 }
 \arguments{
 \item{df}{The observed response time, either as a vector or a data frame}
 
-\item{timeVar}{[optional] The name of the RT variable if df is a data frame
-Useful when using the %>% pipeline.}
+\item{timeVar}{(Optional) The name of the RT variable if df is a data frame
+Useful when using the pipeline.}
 
-\item{binwidth}{[optional] The width of the bin used to computer statistics; in msec.}
-
-\item{maxtime}{[unused]}
-
-\item{mintime}{[unused]}
+\item{binwidth}{(optional) The width of the bin used to computer statistics; in msec.}
 }
 \value{
 a data frame of distributional statistics such as the pdf, hazard rate, counts, etc.
