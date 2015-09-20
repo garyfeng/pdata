@@ -1,6 +1,6 @@
 ---
-title: "Vignette Title"
-author: "Vignette Author"
+title: "Analyzing Process Data"
+author: "Gary Feng <gary.feng@gmail.com>"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -9,50 +9,46 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
 
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
+## Conducting statistical significant tests ##
 
-## Vignette Info
+### Adjusting the p-value for multiple comparisons ###
 
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+In the following example, we have a data frame ```dfSceneDur``` with three variables, 
 
-## Styles
+* ```sceneId``` indicates the scenes
+* ```blockId``` marks the two conditions in this study
+* ```dur``` is the duration of each scene
 
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+We wish to test if ```dur``` differs by condition in each scene. Given the number of multiple 
+comparisons, we need to adjust the family significance level, e.g., using the Bonferroni method.
 
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
+``` {r  eval=FALSE}
+# do Wilcoxon for each scene
+wilcoxRes <- dfSceneDur %>% 
+  group_by(sceneId) %>% 
+  do(w = wilcox.test(as.numeric(.$dur) ~ .$blockId, data=.)) 
 
-## Figures
+# find out which scene is significant, with p.adjust()
+wilcoxRes.sig <- NULL
+for (i in 1:length(wilcoxRes$sceneId)) {
+  # loop through all scenes
+  scene<- wilcoxRes$sceneId[i]
+  p<- wilcoxRes$w[i][[1]]$p.value
+  if (p.adjust(p, n=length(wilcoxRes$sceneId), method="bonferroni")<0.05) {
+    append(wilcoxRes.sig, 
+           paste("Test is significant (with Bonferroni adjustment) for Scence='", scene, "', with p=", p))
+  }
+}
 
-The figure sizes have been customised so that you can easily put two images side-by-side. 
-
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
 ```
 
-You can enable figure captions by `fig_caption: yes` in YAML:
+In generating the report, we can do something like 
 
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
-
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
-
-## More Examples
-
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
+```
+There are `r '\x60r length(wilcoxRes.sig) \x60'` scenes showing significant 
+difference after the Bonferroni adjustment: 
+`r '\x60r print (wilcoxRes.sig) \x60'`
 ```
 
-Also a quote using `>`:
 
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
