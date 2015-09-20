@@ -1,0 +1,40 @@
+---
+title: "How To Build This Package"
+author: "Gary Feng"
+date: "September 19, 2015"
+output: html_document
+---
+
+```{r}
+require(devtools)
+#   http://r-pkgs.had.co.nz/
+#
+# Some useful keyboard shortcuts for package authoring:
+#
+#   Build and Reload Package:  'Cmd + Shift + B'
+#   Check Package:             'Cmd + Shift + E'
+#   Test Package:              'Cmd + Shift + T'
+
+```
+
+
+## Creating vignettes
+
+Vignettes are tutorials on to use the library to perform real tasks. The following vignettes help users with a sense of the workflow and with completing individual tasks. 
+
+```{r}
+# data import from XML and other sources
+devtools::use_vignette("ReadData")
+# the data structure and how to transform the data for analysis
+devtools::use_vignette("ManipulateData")
+# visualization
+devtools::use_vignette("VisualizeData")
+# examples of how to do analysis and modeling of specific data types
+devtools::use_vignette("AnalyzeData")
+# validation using 
+devtools::use_vignette("ValidateData")
+# reporting
+devtools::use_vignette("ReportData")
+
+```
+
