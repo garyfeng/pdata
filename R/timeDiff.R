@@ -17,6 +17,7 @@ timeDiff <- function(t0, ts) {
   # skip if no NA in t0 for speed
   if (! any(is.na(t0))) return ((ts-t0))
   # now do the for loop
+  # TO-DO: the for-loop is slow. Tried to use the backFillNA function but got some error messages.
   for (i in 1:length(t0)){
     if (is.na(t0[i])) {
       t0[i]<- prevVal
