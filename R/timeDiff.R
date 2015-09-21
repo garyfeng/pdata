@@ -1,6 +1,9 @@
 #' A function to compute time differences between t0 and ts, and returns a vector of duration.
-#' !!TO-DO!! Wanted to use my backFillNA function, but it throws error messages working with POSIX timestamps.
-#' !!TO-DO!! So we do a stupid for loop here
+#'
+#' In process data analysis we frequently need to calculate the duration between two events. since
+#'    in most cases each event is a row, we can set a particular event as t0, with NA filled for all
+#'    other rows except for the event of interest. Then we calcualte the lag time for the vector
+#'    ts.
 #'
 #' @param t0 A vector of time marks (integer, real, or Date), with some elements (at least the first) with non-NA values
 #' @param ts A vector of timestamps of the same length and type of t0.
@@ -16,14 +19,8 @@ timeDiff <- function(t0, ts) {
   # back fill NA with a for loop
   # skip if no NA in t0 for speed
   if (! any(is.na(t0))) return ((ts-t0))
-  # now do the for loop
-  # TO-DO: the for-loop is slow. Tried to use the backFillNA function but got some error messages.
-  for (i in 1:length(t0)){
-    if (is.na(t0[i])) {
-      t0[i]<- prevVal
-    } else {
-      prevVal<-t0[i]
-    }
-  }
+  # if there are NAs, backfill; the current backFillNA() can handle POSIXct
+  t0 <- backFillNA(t0)
+
   return(ts-t0)
 }
