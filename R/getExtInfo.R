@@ -1,3 +1,5 @@
+require(dfat)
+
 ######################
 
 #' A function to map the extendedInfo into a list of lists

@@ -1,3 +1,4 @@
+require(muhaz)
 
 #' To compute the empirical density function and hazard rate of response time
 #'
@@ -18,7 +19,6 @@
 #'
 
 getDistr <-function (df, timeVar="t", binwidth=50) {
-  require(muhaz)
 
   if(is.data.frame(df)) {
     fixdur<-unlist(df[,timeVar])
