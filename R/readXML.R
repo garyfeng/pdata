@@ -1,6 +1,6 @@
 # set global function for reading  millisecons from the timestamp in the data
 options(digits.secs=3)
-
+require(XML)
 
 #' Read a list of XML files and return a data frame containing all non eNAEP API events
 #'
