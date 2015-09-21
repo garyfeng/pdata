@@ -12,7 +12,6 @@ options(digits.secs=3)
 #' @examples test <- readXML(Sys.glob("data/*"), subjIdVar="subj")
 #' @export
 #'
-
 readXML <- function (xmlFiles, subjIdVar = "bookletId") {
 
   # construct the result data frame
