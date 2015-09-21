@@ -2,9 +2,7 @@
 % Please edit documentation in R/timeDiff.R
 \name{timeDiff}
 \alias{timeDiff}
-\title{A function to compute time differences between t0 and ts, and returns a vector of duration.
-!!TO-DO!! Wanted to use my backFillNA function, but it throws error messages working with POSIX timestamps.
-!!TO-DO!! So we do a stupid for loop here}
+\title{A function to compute time differences between t0 and ts, and returns a vector of duration.}
 \usage{
 timeDiff(t0, ts)
 }
@@ -17,9 +15,10 @@ timeDiff(t0, ts)
 A vector of real values that is ts-t0. When t0 is NA, it is back filled with the last nonNA value.
 }
 \description{
-A function to compute time differences between t0 and ts, and returns a vector of duration.
-!!TO-DO!! Wanted to use my backFillNA function, but it throws error messages working with POSIX timestamps.
-!!TO-DO!! So we do a stupid for loop here
+In process data analysis we frequently need to calculate the duration between two events. since
+   in most cases each event is a row, we can set a particular event as t0, with NA filled for all
+   other rows except for the event of interest. Then we calcualte the lag time for the vector
+   ts.
 }
 \details{
 Note that the return value is of type "difftime";

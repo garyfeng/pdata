@@ -33,6 +33,7 @@ devtools::use_vignette("ManipulateData")
 devtools::use_vignette("VisualizeData")
 # examples of how to do analysis and modeling of specific data types
 devtools::use_vignette("AnalyzeData")
+devtools::use_vignette("AnalyzeData_keystrokes")
 # validation using 
 devtools::use_vignette("ValidateData")
 # reporting
