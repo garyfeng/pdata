@@ -1,0 +1,243 @@
+---
+title: "Analyzing Keystrokes"
+author: "Gary Feng <gary.feng@gmail.com>"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+# Keystroke Analysis in Educational Tests #
+
+To be expanded at a later time.
+
+# Capturing keystrokes # 
+
+Keystrokes are a misnomer. For our purposes, we track the changes in the text content using a 
+diff algorithm. The text diff may be triggered by keyboard input, but also other editing actions
+such as copy-and-paste, spell-checker use, etc.
+
+*To be expanded*
+
+# Data Structure and Transformation #
+
+The following is an example of a "text.change" entry, where the letter 's' at position 51 was
+removed. 
+
+```
+<observableDatum>
+  <sceneId>AnswerQuestions</sceneId>
+  <controlId>AnswerQuestions.TextArea</controlId>
+  <eventType>text.change</eventType>
+  <timestamp>2015-07-27T17:57:10.349Z</timestamp>
+  <content>
+    <pair>
+      <key>position</key>
+      <value>51</value>
+    </pair>
+    <pair>
+      <key>removedText</key>
+      <value> <![CDATA[ s ]]></value>
+    </pair>
+    <pair>
+      <key>addedText</key>
+      <value> <![CDATA[ ]]> </value>
+    </pair>
+  </content>
+</observableDatum>
+```
+
+The ```text.change``` events are sandwitched between the ```text.focus``` and the ```text.blur``` events, which mark whether the text input area is activated or deactivated (e.g., when 
+the user clicked
+in and out of the box). We also need to distinghish text input on different scenes, which is
+why we keep the ```nav.scene``` event as an input to the ```events2df()``` function. It is in the 
+```dropEvents``` list, meaning that ```events2df``` will not output this event.
+
+For analysis, we extract all the ```text.\*``` nodes into a data frame. Note the column 
+```content``` which contains lists of attributes such as ```addedText``` in the XML above. This gives us the flexibility to store arbitrary information for different events without polluting the data
+frame structure. We can access these attributes using the ```@``` operator defined in the 
+[dfat](https://github.com/garyfeng/dfat) library. This hopefully achieves a balance between 
+representational flexibility and the convenience of the data frame structure required by most
+R statistical functions.
+
+```{r, eval=FALSE}
+require(devtools)
+devtools::install_github('garyfeng/dfat')   # overwrites the @ sign
+devtools::install_github('garyfeng/pdata')  # utilities for process data 
+
+# read the data from all XML files under "./data"; 
+# the filename (without extention) will be in the variable "bookletId"
+data  <- readXML(Sys.glob("data/*.XML"), subjIdVar="bookletId")
+
+# in this case the data frame will have the following variables
+# bookletId: subj ID
+# blockId: the condition the subj is in.
+# sceneId: the scence in the test
+# eventType: the event id, for each row
+# ts: the timestamp in POSIXct
+# content: a list with named members representing extended attributes; see above XML for an example
+#  The <key> becomes the attribute name, and <value> becomes the value.
+
+# get only events starting with "text"
+keystrokes<- subset(data, grepl("^text", data$eventType))
+
+```
+
+----
+
+We then analyze the inter-key intervals (IKIs) for various kinds of keystroke events, namely
+
+* all keystrokes
+* spaces, which most typists type automatically after a word
+* delets, which would require some meta-cognitive monitoring and cognitive inhibition.
+* inter-word, which are the iki before a word initial, defined as after a space but not a delet event
+* intra-word, which are all non-inter-word alphabetic keys
+
+We will also calculate a bunch of other useful variables.
+
+``` {r, eval=FALSE}
+# calc the durSinceTextFocus
+t0<- keystrokes$ts; t0[keystrokes$eventType!="text.focus"]<-NA; t0[1]<-keystrokes$ts[1]
+keystrokes$durSinceTextFocus <- as.numeric(timeDiff(t0, keystrokes$ts))
+
+# note that position was a char var by default. Turning to numeric.
+# the +1 has to do with the semantics of the cursor position; 
+# At least with the keystroke capturing system we used, the textPos is the position at
+# which the action is ABOUT TO HAPPEN, whereas the textLen is the lengh of the text
+# after the editing action. We add 1 here to make them more or less consistent, although
+# it does not solve the issue completely.
+# TO-DO: think through the relation between  textPos and textLen
+keystrokes$textPos <- as.numeric(keystrokes$content@"position") +1
+
+# Before calculating the textLen variable, we first get the length of the change
+# + for addedText, - for removedText; the editLen is the net difference.
+# this one may be better left without using @
+keystrokes$editLen <-sapply(keystrokes$content, function(c) {
+  ifelse( (is.null(c$position)), 0, nchar(c$addedText)-nchar(c$removedText))
+})
+
+# add editLen over time (but within each user and textbox)
+keystrokes %>% group_by(bookletId, controlId) %>% 
+  mutate(textLen = cumsum(editLen)) -> keystrokes
+keystrokes$textLen[is.na(keystrokes$textPos)] <-NA
+
+# Classify keystrokes 
+# TO-DO: very simple algorithm; this needs to be more sophisticated.
+addedText <-keystrokes$content@"addedText"
+allKeys <- which(! is.na(addedText))
+# words are alphabetic
+alphabetKeys<- which(addedText %in% c(letters, LETTERS))
+# no addition, it means deletion; @@ we may miss the type-over event here
+del <- which(addedText=="")   
+# positions of spaces, the next ones are the word initials, let's assume
+sp <- which(addedText==" ")   
+# word initial, after space but the next key is not deleting
+inter <- intersect(sp+1, alphabetKeys)  
+# all alphabetic keys that are not inter are "intra"
+intra <- setdiff(alphabetKeys, inter)  
+# classifiation
+keystrokes$keyType <-NA
+keystrokes$keyType[sp] <-"Spaces"
+keystrokes$keyType[del] <-"Delecting"
+keystrokes$keyType[intra] <-"Intra-word"
+keystrokes$keyType[inter] <-"Inter-word"
+
+# prevent reordering in plotting
+# TO-DO: this gives warnings of duplicated levels. What we want is that the levels are ordered
+#   in the order of how they occurred in the data. There's got to be a better way to do this.
+#   Elsewhere I manually set the order with levels=c("first", "second", ...)
+keystrokes$sceneId <- factor(keystrokes$sceneId, levels = keystrokes$sceneId)
+keystrokes$eventType <- factor(keystrokes$eventType, levels = keystrokes$eventType)
+
+```
+
+----
+
+## Text Length and Cursor Position by Scenes and by Condition ##
+
+The "ribbon" plot shows the progression of 2 variables over time
+
+* the text length
+* the cursor position
+
+The difference between the two lines -- whenever the test-taker edit at positions other than the end of the text -- is shown in the shaded area. In other words, the "flags" signal non-local editing actions. 
+
+In the following example, we plot the ribbon plot for each ```sceneId```, with time zero starting from
+the onset of each scene (one textbox per scene at most). We also want to compare across a categorical 
+variable ```blockId```, and identify each student (```bookletId```) with color.
+
+```{r, eval=FALSE}
+# stats of keystrokes
+ggplot()+
+  geom_ribbon(data=keystrokes, alpha=0.5, 
+      aes(x=as.numeric(durSinceSceneStart)/60, ymin=as.numeric(textPos), ymax=as.numeric(textLen), 
+          color=bookletId, fill=bookletId))+
+  # titles and options
+  xlab("Task Time (in min.)") +ylab("Text Length - Cursor Position")+ 
+  theme(legend.position="none")+
+  facet_grid(blockId ~ sceneId , scales="free_x")
+
+```
+
+----
+
+Let's say we want to show the distribution of the inter-key-intervals (IKIs) for
+different types of keystrokes, we can use the getDistr() function (part of the pdata library)
+to compute distribution functions, get several distributions under a single data frame,
+and plot them using ggplot.
+
+``` {r, eval=FALSE}
+# showing keystroke iki hazard and pdf
+# we need "getDistr()" which in turn requires the muhaz library
+
+binwidth = 25
+# We want to get distribution functions for different conditions in a single data frame
+# to make it easier to plot in ggplot2.
+# getDistr() doesn't work well with dplyr's group_by() syntax for whatever reason.
+# using the good-o for loop.
+tmp <- getDistr(keystrokes$dur*1000, binwidth = binwidth) %>% mutate(keyType="All")
+for (i in unique(keystrokes$keyType)) {
+  if (is.na(i)) next 
+  getDistr(keystrokes$dur[keystrokes$keyType==i] *1000, binwidth = binwidth) %>% 
+    mutate(keyType=i) %>% 
+    rbind(tmp) -> tmp
+}
+
+
+###############
+# 4 panel graph
+
+for (i in c("All", "Intra-word", "Inter-word", "Spaces", "Delecting")) {
+  if (is.na(i)) next 
+  pdfLog<- ggplot(data=tmp[tmp$keyType==i,], aes(x=time, y=pdf, color=sceneId))+
+    geom_line() +
+    labs(list(x = "InterKey Interval (msec)", y = "Prob. Density"))+
+    xlim(0.001, 1000)
+  
+  pdfLogLog<- ggplot(data=tmp[tmp$keyType==i,], aes(x=time, y=pdf, color=sceneId))+
+    geom_line() +
+    labs(list(x = "InterKey Interval (msec)", y = "Prob. Density"))+
+    #stat_smooth(se=F) +
+    scale_x_log10() +scale_y_log10()+
+    theme(legend.position="none")
+  
+  hazLog<- ggplot(data=tmp[tmp$keyType==i,], aes(x=time, y=haz, color=sceneId))+
+    geom_line() +
+    labs(list(x = "InterKey Interval (msec)", y = "Hazard Rate"))+
+    xlim(0.001, 1500)+
+    theme(legend.position="none")
+  
+  hazLogLog<- ggplot(data=tmp[tmp$keyType==i,], aes(x=time, y=haz, color=sceneId))+
+    geom_line() +
+    labs(list(x = "InterKey Interval (msec)", y = "Hazard Rate"))+
+    #stat_smooth(se=F) +
+    scale_x_log10() +scale_y_log10()+ theme(legend.position="none")
+  
+  grid.arrange(pdfLog, hazLog, pdfLogLog, hazLogLog, ncol=2, 
+               top=textGrob(paste("KeyType = ", i), gp=gpar(cex=2)))
+}
+```
+

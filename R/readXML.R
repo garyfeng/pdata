@@ -1,3 +1,7 @@
+# set global function for reading  millisecons from the timestamp in the data
+options(digits.secs=3)
+
+
 #' Read a list of XML files and return a data frame containing all non eNAEP API events
 #'
 #' @param xmlFiles A vector of eNAEP XML file names with full path;
@@ -10,6 +14,7 @@
 #'
 
 readXML <- function (xmlFiles, subjIdVar = "bookletId") {
+
   # construct the result data frame
   res <- NULL
   for (f in xmlFiles) {

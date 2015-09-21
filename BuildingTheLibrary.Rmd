@@ -22,7 +22,9 @@ require(devtools)
 
 Vignettes are tutorials on to use the library to perform real tasks. The following vignettes help users with a sense of the workflow and with completing individual tasks. 
 
-```{r}
+**Warning: running the following code will overwrite any existing vignettes you have already created.**
+
+```{r eval=FALSE}
 # data import from XML and other sources
 devtools::use_vignette("ReadData")
 # the data structure and how to transform the data for analysis
