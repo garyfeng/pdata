@@ -5,20 +5,24 @@ require(XML)
 #' Read a list of XML files and return a data frame containing all non eNAEP API events
 #'
 #' @param xmlFiles A vector of eNAEP XML file names with full path;
-#'   typically from \code{Sys.glob("path/*")}
+#'   typically from \code{Sys.glob("path/*")}. Note that the XMLs can be zipped.
 #' @param subjIdVar String of the name of the variable in the returned data frame for the
 #'   subjectId, which is the filename of the XML file; default to rewriting "bookletId".
 #'   If that's not appropriate, use another meaningful variable name.
 #' @examples test <- readXML(Sys.glob("data/*"), subjIdVar="subj")
 #' @export
 #'
-readXML <- function (xmlFiles, subjIdVar = "bookletId") {
+readXML <- function (xmlFiles, subjIdVar = "bookletId", validate=F) {
 
   # construct the result data frame
   res <- NULL
   for (f in xmlFiles) {
-    # parse the XML file
-    doc <- xmlParse(f)
+    # parse the XML file with validation, if it's specified and DTD is specified in the XML
+    # The current XML output does not have the schemma specified.
+
+    # @@ TO-DO: add error handling
+    doc <- xmlParse(f, validate= validate)
+
     if (is.null(doc)) {
       # parsing failed
       warning(paste("readXML failed to parse the file ", f, ". Moving on"))
