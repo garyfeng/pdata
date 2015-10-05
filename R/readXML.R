@@ -20,8 +20,15 @@ readXML <- function (xmlFiles, subjIdVar = "bookletId", validate=F) {
     # parse the XML file with validation, if it's specified and DTD is specified in the XML
     # The current XML output does not have the schemma specified.
 
-    # @@ TO-DO: add error handling
-    doc <- xmlParse(f, validate= validate)
+    doc <- tryCatch({
+      xmlParse(f, validate= validate)
+    }, warning = function(w) {
+      warning(paste("readXML failed to parse the file ", f, ".\nWarning = ",w,"\nMoving on"))
+      next
+    }, error = function(e) {
+      warning(paste("readXML failed to parse the file ", f, ".\nError = ",e,"\nMoving on"))
+      next
+    })
 
     if (is.null(doc)) {
       # parsing failed
