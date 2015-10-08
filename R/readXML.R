@@ -9,10 +9,23 @@ require(XML)
 #' @param subjIdVar String of the name of the variable in the returned data frame for the
 #'   subjectId, which is the filename of the XML file; default to rewriting "bookletId".
 #'   If that's not appropriate, use another meaningful variable name.
+#' @param validate Whether the XML parser should perform validation, either using DTD or schemma;
+#'   Default is False; @@ schemma is not yet implemented
+#' @param funEvents2df The function to call to turn XML events into rows in a data frame.
+#'   Default is set to events2df()
+#' @param xpathAllEvents The XPath expression to pass to the funEvents2df()
+#' @param dropEvents A vector of event names to be dropped after funEvents2df() calculates
+#'   the event times.
+#' @param filterOutEvents A vector of event names to be excluded completely in funEvents2df()
+#'
 #' @examples test <- readXML(Sys.glob("data/*"), subjIdVar="subj")
 #' @export
 #'
-readXML <- function (xmlFiles, subjIdVar = "bookletId", validate=F) {
+readXML <- function (xmlFiles, subjIdVar = "bookletId", validate=F,
+                     funEvents2df = events2df,
+                     xpathAllEvents = '//observableData/observableDatum',
+                     dropEvents="api.initializeSettingRequest",
+                     filterOutEvents=NULL) {
 
   # construct the result data frame
   res <- NULL
@@ -35,11 +48,9 @@ readXML <- function (xmlFiles, subjIdVar = "bookletId", validate=F) {
       warning(paste("readXML failed to parse the file ", f, ". Moving on"))
       next
     }
-    # conert to data.frame.
-    #!!! note that the bookletId is always "TextBooklet", so we don't have studentId
-    #!!! have to calc from the filename
-    d <-events2df(doc, xpathAllEvents, filterOutEvents=filterOutEvents,
-                  dropEvents="api.initializeSettingRequest")
+    # convert to data.frame.
+    d <-funEvents2df(doc, xpathAllEvents, filterOutEvents=filterOutEvents,
+                  dropEvents=dropEvents)
     if (nrow(d)==0) {
       # conversion failed, no useful data extracted
       warning(paste("events2df returned no valid data for the file ", f, ". Moving on"))
