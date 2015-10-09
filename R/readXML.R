@@ -6,9 +6,7 @@ require(XML)
 #'
 #' @param xmlFiles A vector of eNAEP XML file names with full path;
 #'   typically from \code{Sys.glob("path/*")}. Note that the XMLs can be zipped.
-#' @param subjIdVar String of the name of the variable in the returned data frame for the
-#'   subjectId, which is the filename of the XML file; default to rewriting "bookletId".
-#'   If that's not appropriate, use another meaningful variable name.
+#' @param saveXMLFileNameAs String of variable name to contain the XML file name .
 #' @param validate Whether the XML parser should perform validation, either using DTD or schemma;
 #'   Default is False; @@ schemma is not yet implemented
 #' @param funEvents2df The function to call to turn XML events into rows in a data frame.
@@ -18,10 +16,10 @@ require(XML)
 #'   the event times.
 #' @param filterOutEvents A vector of event names to be excluded completely in funEvents2df()
 #'
-#' @examples test <- readXML(Sys.glob("data/*"), subjIdVar="subj")
+#' @examples test <- readXML(Sys.glob("data/*"), saveXMLFileNameAs="subj")
 #' @export
 #'
-readXML <- function (xmlFiles, subjIdVar = "bookletId", validate=F,
+readXML <- function (xmlFiles, saveXMLFileNameAs = "xmlFileName", validate=F,
                      funEvents2df = events2df,
                      xpathAllEvents = '//observableData/observableDatum',
                      dropEvents="api.initializeSettingRequest",
@@ -60,7 +58,7 @@ readXML <- function (xmlFiles, subjIdVar = "bookletId", validate=F,
       next
     }
     # extract the filename==studentID and drop the path and extension number
-    d[, subjIdVar] <- basename(f)
+    d[, saveXMLFileNameAs] <- basename(f)
     # now we get all the events, calc the durations, but drop the initial api event
     res <- rbind(res, d)
   }
