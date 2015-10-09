@@ -30,6 +30,9 @@ readXML <- function (xmlFiles, subjIdVar = "bookletId", validate=F,
   # construct the result data frame
   res <- NULL
   for (f in xmlFiles) {
+    # print out a sign that files are being processed
+    cat("."); flush.console()
+
     # parse the XML file with validation, if it's specified and DTD is specified in the XML
     # The current XML output does not have the schemma specified.
 
@@ -57,7 +60,7 @@ readXML <- function (xmlFiles, subjIdVar = "bookletId", validate=F,
       next
     }
     # extract the filename==studentID and drop the path and extension number
-    d[, subjIdVar] <- sub("(.*\\/)([^.]+)(\\.[[:alnum:]]+$)", "\\2", f)
+    d[, subjIdVar] <- basename(f)
     # now we get all the events, calc the durations, but drop the initial api event
     res <- rbind(res, d)
   }
