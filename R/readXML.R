@@ -19,7 +19,7 @@ require(XML)
 #' @examples test <- readXML(Sys.glob("data/*"), saveXMLFileNameAs="subj")
 #' @export
 #'
-readXML <- function (xmlFiles, saveXMLFileNameAs = "xmlFileName", validate=F,
+readXML <- function (xmlFiles, saveXMLFileNameAs = NA, validate=F,
                      funEvents2df = events2df,
                      xpathAllEvents = '//observableData/observableDatum',
                      dropEvents="api.initializeSettingRequest",
@@ -57,8 +57,10 @@ readXML <- function (xmlFiles, saveXMLFileNameAs = "xmlFileName", validate=F,
       warning(paste("events2df returned no valid data for the file ", f, ". Moving on"))
       next
     }
-    # extract the filename==studentID and drop the path and extension number
-    d[, saveXMLFileNameAs] <- basename(f)
+    # extract the filename and drop the path
+    if(!is.na(saveXMLFileNameAs)) {
+      d[, saveXMLFileNameAs] <- basename(f)
+    }
     # now we get all the events, calc the durations, but drop the initial api event
     res <- rbind(res, d)
   }
