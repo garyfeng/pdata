@@ -4,11 +4,12 @@
 #'
 #' @param graph A DiagrammeR graph object created using the create_graph() method. We need only
 #'   the $dot_code portion
+#' @param subGraphName Optional string for the name of the subgraph; No spaces
 #' @return DOT of the graph but packaged as a subgraph
 #'
 #' @export
-gf_createSubgraph <- function (graph) {
-  gsub("digraph", "subgraph cluster1", graph$dot_code)
+gf_createSubgraph <- function (graph, subGraphName="") {
+  gsub("digraph", paste("subgraph", subGraphName, sep=" "), graph$dot_code)
 }
 
 #' Great a DOT graph from subgraphs
