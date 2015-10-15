@@ -4,20 +4,34 @@
 \alias{readXML}
 \title{Read a list of XML files and return a data frame containing all non eNAEP API events}
 \usage{
-readXML(xmlFiles, subjIdVar = "bookletId")
+readXML(xmlFiles, saveXMLFileNameAs = NA, validate = F,
+  funEvents2df = events2df,
+  xpathAllEvents = "//observableData/observableDatum",
+  dropEvents = "api.initializeSettingRequest", filterOutEvents = NULL)
 }
 \arguments{
 \item{xmlFiles}{A vector of eNAEP XML file names with full path;
-typically from \code{Sys.glob("path/*")}}
+typically from \code{Sys.glob("path/*")}. Note that the XMLs can be zipped.}
 
-\item{subjIdVar}{String of the name of the variable in the returned data frame for the
-subjectId, which is the filename of the XML file; default to rewriting "bookletId".
-If that's not appropriate, use another meaningful variable name.}
+\item{saveXMLFileNameAs}{String of variable name to contain the XML file name .}
+
+\item{validate}{Whether the XML parser should perform validation, either using DTD or schemma;
+Default is False; @ schemma is not yet implemented}
+
+\item{funEvents2df}{The function to call to turn XML events into rows in a data frame.
+Default is set to events2df()}
+
+\item{xpathAllEvents}{The XPath expression to pass to the funEvents2df()}
+
+\item{dropEvents}{A vector of event names to be dropped after funEvents2df() calculates
+the event times.}
+
+\item{filterOutEvents}{A vector of event names to be excluded completely in funEvents2df()}
 }
 \description{
 Read a list of XML files and return a data frame containing all non eNAEP API events
 }
 \examples{
-test <- readXML(Sys.glob("data/*"), subjIdVar="subj")
+test <- readXML(Sys.glob("data/*"), saveXMLFileNameAs="subj")
 }
 

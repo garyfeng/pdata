@@ -1,4 +1,4 @@
-require(XML)
+# require(XML)
 
 #' A funtion that takes a parsed xml doc, find observableDatum nodes according to the xpath, and turn it into a dataframe
 #' It assumes the node is a '//observableData/observableDatum', with extended Info (i.e., "content").

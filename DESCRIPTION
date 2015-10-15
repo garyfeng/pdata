@@ -16,6 +16,8 @@ Imports:
     grid,
     gridExtra,
     XML,
-    muhaz
+    muhaz,
+    dfat,
+    DiagrammeR
 Suggests: knitr
 VignetteBuilder: knitr
