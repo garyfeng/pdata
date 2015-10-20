@@ -4,7 +4,7 @@
 \alias{makeEventDiagram}
 \title{Generating a graph based on an input vector of states}
 \usage{
-makeEventDiagram(evt, nodeShape = list(), graphName = "", ignoreRuns = F,
+makeEventDiagram(evt, nodeShapeBy = NA, graphName = "", ignoreRuns = F,
   excludeEdges = NA, excludeNodes = c(NA, "NA"), minimalEdgeCount = 0)
 }
 \arguments{
@@ -12,9 +12,8 @@ makeEventDiagram(evt, nodeShape = list(), graphName = "", ignoreRuns = F,
 values of the vector will become the nodes (unless excluded). Edges will be draw from
 the current event to the next event (except those that are excluded).}
 
-\item{nodeShape}{A named list specifying the shape of certain nodes. The name of the element
-is the nodeName, and the value is the shape for that node. Other nodes will use the
-default shape.}
+\item{nodeShapeBy}{A vector of distinct values, of the same length as evt, such that
+event nodes with the same value of nodeShapeBy will have the same shape.}
 
 \item{graphName}{The Name of the graph. This string will be printed at the top of the
 output graph.}

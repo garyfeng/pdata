@@ -8,9 +8,8 @@
 #' @param evt A vector of events, which can be either numeric, char, or factor. The unique
 #'    values of the vector will become the nodes (unless excluded). Edges will be draw from
 #'    the current event to the next event (except those that are excluded).
-#' @param nodeShape A named list specifying the shape of certain nodes. The name of the element
-#'    is the nodeName, and the value is the shape for that node. Other nodes will use the
-#'    default shape.
+#' @param nodeShapeBy A vector of distinct values, of the same length as evt, such that
+#'    event nodes with the same value of nodeShapeBy will have the same shape.
 #' @param excludeEdges A logical vector the same longth as the events. If True, the edge
 #'    associated with corresponding event will not be drawn. NA by default.
 #' @param excludedNodes A vector of names of the nodes to be excluded.
@@ -22,7 +21,7 @@
 #'
 #' @export
 makeEventDiagram <- function(evt,
-                             nodeShape = list(),
+                             nodeShapeBy = NA,
                              graphName="",
                              ignoreRuns = F,
                              excludeEdges=NA,
@@ -38,16 +37,32 @@ makeEventDiagram <- function(evt,
     evtRunCounts <-rle(evt)$lengths
     # this will break the excludeEndges, so let's get the corresponding
     # elements in the excludeEdges assuming we don't exclude edges in the runs
-    excludeEdges <- excludeEdges[cumsum(evtRunCounts)]
+    if(!is.na(excludeEdges)) excludeEdges <- excludeEdges[cumsum(evtRunCounts)]
+    if(!is.na(nodeShapeBy))    nodeShapeBy<-nodeShapeBy[cumsum(evtRunCounts)]
   }
 
   # nodes; exclude NAs
-  nodes <- setdiff(unique(evt), excludeNodes)
-  nodes <- create_nodes(nodes = nodes, type = "event", shape = "rectangle")
-  stopifnot(nrow(nodes)>0)
+  nodeNames <- setdiff(unique(evt), excludeNodes)
+  # nodeShapeValue is either a vector of shapes or a char as the default
+  nodeShapeValue <- "rectangle"  # default
   # change shape if necessary
-  filter <- which(nodes$nodes %in% names(nodeShape))
-  nodes$shape[filter] <- nodeShape[[nodes$nodes[filter]]]
+  if(!is.na(nodeShapeBy)) {
+    shapes = c( "rectangle", "oval", "diamond", "egg", "triangle",
+                "parallelogram", "house", "pentagon", "hexagon", "septagon",
+                "octagon", "doubleoctagon", "cds")
+    nShapesNeeded <- length(unique(nodeShapeBy))
+    # repeat the shapes if not enough
+    if(length(shapes) < nShapesNeeded) {
+      shapes <- rep_len(shapes, nShapesNeeded)
+    }
+    nodeShapeValue <- unlist(shapes[as.numeric(as.factor(nodeShapeBy))])
+  }
+  nodes <- create_nodes(nodes = nodeNames, type = "event",
+                        shape = nodeShapeValue)
+  stopifnot(nrow(nodes)>0)
+
+#   filter <- which(nodes$nodes %in% names(nodeShapeBy))
+#   nodes$shape[filter] <- nodeShapeBy[[nodes$nodes[filter]]]
 
   # to create edges, we need to aggregate and count unique edges
   dfEvt <-data.frame(from=evt, to=lead(evt))
