@@ -34,4 +34,9 @@ a DiagrammeR graph object
 \description{
 Generating a graph based on an input vector of states
 }
+\examples{
+df <- data.frame(evt=c("this", "2", "that", "2"), by=c(1,2,1,3))
+makeEventDiagram(df$evt)
+makeEventDiagram(df$evt, nodeShapeBy=df$by)
+}
 

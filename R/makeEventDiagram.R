@@ -19,7 +19,13 @@
 #'    vector, so that there are no self-referencial edges.
 #' @param minimalEdgeCount The minimal number of transition occurances before an edge is drawn.
 #'
+#' @examples
+#' df <- data.frame(evt=c("this", "2", "that", "2"), by=c(1,2,1,3))
+#' makeEventDiagram(df$evt)
+#' makeEventDiagram(df$evt, nodeShapeBy=df$by)
+#'
 #' @export
+
 makeEventDiagram <- function(evt,
                              nodeShapeBy = NA,
                              graphName="",
@@ -30,7 +36,7 @@ makeEventDiagram <- function(evt,
   # need to convert factors to char
   evt<-as.character(evt)
   # make sure the vectors are the same size
-  if (length(excludeEdges)==1) stopifnot(length(excludeEdges) == length(evt))
+  if (length(excludeEdges)>1) stopifnot(length(excludeEdges) == length(evt))
   # reduce the runs to avoid too much self-referencials.
   if (ignoreRuns) {
     evt <- rle(evt)$values
@@ -70,7 +76,7 @@ makeEventDiagram <- function(evt,
 #   nodes$shape[filter] <- nodeShapeBy[[nodes$nodes[filter]]]
 
   # to create edges, we need to aggregate and count unique edges
-  dfEvt <-data.frame(from=evt, to=lead(evt))
+  dfEvt <-data.frame(from=evt, to=c(evt[-1], NA))
   # delete edges crossing run boundaries, if the if (is.na(excludeEdges))
   if (length(excludeEdges)>1) {
     dfEvt <-data.frame(from=dfEvt$from[!excludeEdges], to=dfEvt$to[!excludeEdges])
