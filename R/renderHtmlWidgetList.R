@@ -37,11 +37,11 @@ renderHtmlWidgetList <- function(widgetList, renderFunction){
   # solution from https://gist.github.com/ReportMort/9ccb544a337fd1778179
   out <- NULL
   knitPrefix1 <- "\n```{r "
-  knitPrefix2 <- "results='asis', cache=FALSE, echo=FALSE}\n\n"
+  knitPrefix2 <- ", results='asis', cache=FALSE, echo=FALSE}\n\n"
   knitSuffix <- "\n\n```"
   for (i in 1:length(widgetList)) {
     # adding unique chunk name
-    knit_expanded <- paste0(knitPrefix1, gVarName, knitPrefix2, renderFunction, "(", gVarName, "[[", i, "]])")
+    knit_expanded <- paste0(knitPrefix1, gVarName, i, knitPrefix2, renderFunction, "(", gVarName, "[[", i, "]])")
     out = c(out, knit_expanded)
   }
   #invisible(out)
