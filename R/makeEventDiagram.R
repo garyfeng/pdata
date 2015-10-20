@@ -38,7 +38,9 @@ makeEventDiagram <- function(evt,
     # this will break the excludeEndges, so let's get the corresponding
     # elements in the excludeEdges assuming we don't exclude edges in the runs
     if(!is.na(excludeEdges)) excludeEdges <- excludeEdges[cumsum(evtRunCounts)]
-    if(!is.na(nodeShapeBy))    nodeShapeBy<-nodeShapeBy[cumsum(evtRunCounts)]
+    if(length(nodeShapeBy)>1) {
+      nodeShapeBy<-nodeShapeBy[cumsum(evtRunCounts)]
+    }
   }
 
   # nodes; exclude NAs
@@ -46,7 +48,7 @@ makeEventDiagram <- function(evt,
   # nodeShapeValue is either a vector of shapes or a char as the default
   nodeShapeValue <- "rectangle"  # default
   # change shape if necessary
-  if(!is.na(nodeShapeBy)) {
+  if(length(nodeShapeBy)>1 ) {
     shapes = c( "rectangle", "oval", "diamond", "egg", "triangle",
                 "parallelogram", "house", "pentagon", "hexagon", "septagon",
                 "octagon", "doubleoctagon", "cds")
