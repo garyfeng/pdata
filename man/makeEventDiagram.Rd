@@ -4,22 +4,26 @@
 \alias{makeEventDiagram}
 \title{Generating a graph based on an input vector of states}
 \usage{
-makeEventDiagram(evt, excludeEdges = NA, subGraphName = "",
-  ignoreRuns = F, excludeNodes = c(NA, "NA"), minimalEdgeCount = 0)
+makeEventDiagram(evt, nodeShape = list(), graphName = "", ignoreRuns = F,
+  excludeEdges = NA, excludeNodes = c(NA, "NA"), minimalEdgeCount = 0)
 }
 \arguments{
 \item{evt}{A vector of events, which can be either numeric, char, or factor. The unique
 values of the vector will become the nodes (unless excluded). Edges will be draw from
 the current event to the next event (except those that are excluded).}
 
-\item{excludeEdges}{A logical vector the same longth as the events. If True, the edge
-associated with corresponding event will not be drawn. NA by default.}
+\item{nodeShape}{A named list specifying the shape of certain nodes. The name of the element
+is the nodeName, and the value is the shape for that node. Other nodes will use the
+default shape.}
 
-\item{subGraphName}{The Name of the graph. This string will be printed at the top of the
+\item{graphName}{The Name of the graph. This string will be printed at the top of the
 output graph.}
 
 \item{ignoreRuns}{FALSE by default. If TRUE, run-length-encoding will be done on the evt
 vector, so that there are no self-referencial edges.}
+
+\item{excludeEdges}{A logical vector the same longth as the events. If True, the edge
+associated with corresponding event will not be drawn. NA by default.}
 
 \item{minimalEdgeCount}{The minimal number of transition occurances before an edge is drawn.}
 

@@ -1,4 +1,4 @@
-# devtools::install_github('rich-iannone/DiagrammeR')
+# devtools::install_github('garyfeng/DiagrammeR')
 # require(DiagrammeR)
 
 #' Generating a graph based on an input vector of states
@@ -8,19 +8,24 @@
 #' @param evt A vector of events, which can be either numeric, char, or factor. The unique
 #'    values of the vector will become the nodes (unless excluded). Edges will be draw from
 #'    the current event to the next event (except those that are excluded).
+#' @param nodeShape A named list specifying the shape of certain nodes. The name of the element
+#'    is the nodeName, and the value is the shape for that node. Other nodes will use the
+#'    default shape.
 #' @param excludeEdges A logical vector the same longth as the events. If True, the edge
 #'    associated with corresponding event will not be drawn. NA by default.
 #' @param excludedNodes A vector of names of the nodes to be excluded.
-#' @param subGraphName The Name of the graph. This string will be printed at the top of the
+#' @param graphName The Name of the graph. This string will be printed at the top of the
 #'    output graph.
 #' @param ignoreRuns FALSE by default. If TRUE, run-length-encoding will be done on the evt
 #'    vector, so that there are no self-referencial edges.
 #' @param minimalEdgeCount The minimal number of transition occurances before an edge is drawn.
 #'
 #' @export
-makeEventDiagram <- function(evt, excludeEdges=NA,
-                             subGraphName="",
+makeEventDiagram <- function(evt,
+                             nodeShape = list(),
+                             graphName="",
                              ignoreRuns = F,
+                             excludeEdges=NA,
                              excludeNodes = c(NA, "NA"),
                              minimalEdgeCount = 0) {
   # need to convert factors to char
@@ -31,12 +36,18 @@ makeEventDiagram <- function(evt, excludeEdges=NA,
   if (ignoreRuns) {
     evt <- rle(evt)$values
     evtRunCounts <-rle(evt)$lengths
+    # this will break the excludeEndges, so let's get the corresponding
+    # elements in the excludeEdges assuming we don't exclude edges in the runs
+    excludeEdges <- excludeEdges[cumsum(evtRunCounts)]
   }
 
   # nodes; exclude NAs
   nodes <- setdiff(unique(evt), excludeNodes)
   nodes <- create_nodes(nodes = nodes, type = "event", shape = "rectangle")
   stopifnot(nrow(nodes)>0)
+  # change shape if necessary
+  filter <- which(nodes$nodes %in% names(nodeShape))
+  nodes$shape[filter] <- nodeShape[[nodes$nodes[filter]]]
 
   # to create edges, we need to aggregate and count unique edges
   dfEvt <-data.frame(from=evt, to=lead(evt))
@@ -68,7 +79,7 @@ makeEventDiagram <- function(evt, excludeEdges=NA,
     gr <- create_graph(nodes_df = nodes,
                        edges_df = edges,
                        #graph_attrs = "layout = neato",
-                       graph_name = subGraphName,
+                       graph_name = graphName,
                        node_attrs = c("fontname = Helvetica",
                                       "style = filled",
                                       "fixedsize = true",
@@ -79,7 +90,7 @@ makeEventDiagram <- function(evt, excludeEdges=NA,
     gr <- create_graph(nodes_df = nodes,
                        #edges_df = edges,
                        #graph_attrs = "layout = neato",
-                       graph_name = subGraphName,
+                       graph_name = graphName,
                        node_attrs = c("fontname = Helvetica",
                                       "style = filled",
                                       "fixedsize = true",
@@ -91,11 +102,11 @@ makeEventDiagram <- function(evt, excludeEdges=NA,
 
   # adding graph title; not a function; must do manually
   gr$dot_code <- gsub("digraph [{]",
-                      paste("digraph {\ngraph [label='", subGraphName, "', labelloc=t, fontsize=30];\n", sep=" "),
+                      paste("digraph {\ngraph [label='", graphName, "', labelloc=t, fontsize=30];\n", sep=" "),
                       gr$dot_code)
 
   # return as a subgraph
-  # gf_createSubgraph(gr, subGraphName)
+  # gf_createSubgraph(gr, graphName)
   # return the graph object
   invisible(gr)
 }

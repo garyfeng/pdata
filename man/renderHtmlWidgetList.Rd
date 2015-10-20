@@ -21,9 +21,11 @@ Render a list of htmlWidgets using various tricks
 }
 \details{
 This is a collection of various tricks. See the URL citations in the code.
+  Note that this code does alliterate global variables starting with "renderHtmlWidgetList_".
+  You may want to delete them using rm(list = ls(pattern="renderHtmlWidgetList_*")).
 }
 \examples{
 Inlcude the following in the Rmd directly
-  `r require(DiagrammeR); renderHtmlWidgetList(grfEventByItemType$g, render_graph)`
+  `r require(DiagrammeR); renderHtmlWidgetList(grfDf$graph, render_graph)`
 }
 
