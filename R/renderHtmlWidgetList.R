@@ -11,7 +11,7 @@ require(knitr)
 #'   Note that this code does alliterate global variables starting with "renderHtmlWidgetList_".
 #'   You may want to delete them using rm(list = ls(pattern="renderHtmlWidgetList_*")).
 #' @examples Inlcude the following in the Rmd directly
-#'   `r require(DiagrammeR); renderHtmlWidgetList(grfEventByItemType$g, render_graph)`
+#'   `r require(DiagrammeR); renderHtmlWidgetList(grfDf$graph, render_graph)`
 #'
 #' @export
 
@@ -36,10 +36,12 @@ renderHtmlWidgetList <- function(widgetList, renderFunction){
   assign(gVarName, widgetList, envir = .GlobalEnv)
   # solution from https://gist.github.com/ReportMort/9ccb544a337fd1778179
   out <- NULL
-  knitPrefix <- "\n```{r results='asis', cache=FALSE, echo=FALSE}\n\n"
+  knitPrefix1 <- "\n```{r "
+  knitPrefix2 <- "results='asis', cache=FALSE, echo=FALSE}\n\n"
   knitSuffix <- "\n\n```"
   for (i in 1:length(widgetList)) {
-    knit_expanded <- paste0(knitPrefix, renderFunction, "(", gVarName, "[[", i, "]])")
+    # adding unique chunk name
+    knit_expanded <- paste0(knitPrefix1, gVarName, knitPrefix2, renderFunction, "(", gVarName, "[[", i, "]])")
     out = c(out, knit_expanded)
   }
   #invisible(out)
