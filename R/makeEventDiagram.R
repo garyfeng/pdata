@@ -59,6 +59,7 @@ makeEventDiagram <- function(evt,
   nodeNames <- setdiff(unique(evt), excludeNodes)
   # nodeShapeValue is either a vector of shapes or a char as the default
   nodeShapeValue <- "rectangle"  # default
+  nodeTooltip <- nodeNames
   # change shape if necessary
   if(length(nodeShapeBy)>1 ) {
     # remove NAs
@@ -77,6 +78,7 @@ makeEventDiagram <- function(evt,
       stop("Some events occur under different values of the nodeShapeBy variable.\n
            Do a crosstab to debug the problem.")
     nodeShapeValue <- shapes[as.numeric(as.factor(as.character(df$by)))]
+    nodeTooltip <- as.character(df$by)
   }
   nodes <- create_nodes(nodes = nodeNames, type = "event",
                         shape = nodeShapeValue)
