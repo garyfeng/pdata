@@ -81,6 +81,7 @@ makeEventDiagram <- function(evt,
     nodeTooltip <- as.character(df$by)
   }
   nodes <- create_nodes(nodes = nodeNames, type = "event",
+                        tooltip = nodeTooltip,
                         shape = nodeShapeValue)
   stopifnot(nrow(nodes)>0)
 
