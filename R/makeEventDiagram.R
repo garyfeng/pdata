@@ -10,6 +10,8 @@
 #'    the current event to the next event (except those that are excluded).
 #' @param nodeShapeBy A vector of distinct values, of the same length as evt, such that
 #'    event nodes with the same value of nodeShapeBy will have the same shape.
+#' @param shapes A character vector of graphviz node shapes. The list will be repeated
+#'    if the number of nodes is larger than the length of the shapes vector.
 #' @param excludeEdges A logical vector the same longth as the events. If True, the edge
 #'    associated with corresponding event will not be drawn. NA by default.
 #' @param excludedNodes A vector of names of the nodes to be excluded.
@@ -20,7 +22,7 @@
 #' @param minimalEdgeCount The minimal number of transition occurances before an edge is drawn.
 #'
 #' @examples
-#' df <- data.frame(evt=c("this"), by=c(1))
+#' df <- data.frame(evt=c("this", "2", "hi", "that", "2", "3"), by=c(1,2, 1, 1, 2, 2))
 #' makeEventDiagram(df$evt)
 #' g<-makeEventDiagram(df$evt, nodeShapeBy=df$by); print(g)
 #'
@@ -32,7 +34,11 @@ makeEventDiagram <- function(evt,
                              ignoreRuns = F,
                              excludeEdges=NA,
                              excludeNodes = c(NA, "NA"),
-                             minimalEdgeCount = 0) {
+                             minimalEdgeCount = 0,
+                             shapes = c( "rectangle", "oval", "diamond", "egg", "triangle",
+                                         "parallelogram", "house", "pentagon", "hexagon", "septagon",
+                                         "octagon", "doubleoctagon", "cds")
+                            ) {
   # need to convert factors to char
   evt<-as.character(evt)
   # make sure the vectors are the same size
@@ -57,16 +63,20 @@ makeEventDiagram <- function(evt,
   if(length(nodeShapeBy)>1 ) {
     # remove NAs
     nodeShapeBy[is.na(nodeShapeBy)] <-"NA"
-    # get shapes
-    shapes = c( "rectangle", "oval", "diamond", "egg", "triangle",
-                "parallelogram", "house", "pentagon", "hexagon", "septagon",
-                "octagon", "doubleoctagon", "cds")
-    nShapesNeeded <- length(unique(nodeShapeBy))
     # repeat the shapes if not enough
+    nShapesNeeded <- length(unique(nodeShapeBy))
     if(length(shapes) < nShapesNeeded) {
       shapes <- rep_len(shapes, nShapesNeeded)
     }
-    nodeShapeValue <- shapes[as.numeric(as.factor(as.character(unique(nodeShapeBy))))]
+    # get shapes; result should be the same length as nodeNames
+    # so we find the unique
+    df <- unique(data.frame(evt=evt, by=by)) %>%
+      filter(evt %in% nodeNames)
+    # test if a event falls under multiple "by" categories. Stop if true.
+    if (length(df$evt) > length(nodeNames))
+      stop("Some events occur under different values of the nodeShapeBy variable.\n
+           Do a crosstab to debug the problem.")
+    nodeShapeValue <- shapes[as.numeric(as.factor(as.character(df$by)))]
   }
   nodes <- create_nodes(nodes = nodeNames, type = "event",
                         shape = nodeShapeValue)
