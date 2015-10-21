@@ -66,7 +66,7 @@ makeEventDiagram <- function(evt,
     if(length(shapes) < nShapesNeeded) {
       shapes <- rep_len(shapes, nShapesNeeded)
     }
-    nodeShapeBy<-as.factor(nodeShapeBy)
+    nodeShapeBy <- as.factor(as.character(nodeShapeBy))
     nodeShapeValue <- unlist(shapes[as.numeric(nodeShapeBy[, drop = TRUE])])
   }
   nodes <- create_nodes(nodes = nodeNames, type = "event",
