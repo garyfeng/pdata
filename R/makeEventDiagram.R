@@ -20,9 +20,9 @@
 #' @param minimalEdgeCount The minimal number of transition occurances before an edge is drawn.
 #'
 #' @examples
-#' df <- data.frame(evt=c("this", "2", "that", "2"), by=c(1,NA,2,NA))
+#' df <- data.frame(evt=c("this"), by=c(1))
 #' makeEventDiagram(df$evt)
-#' g<-makeEventDiagram(df$evt, nodeShapeBy=df$by, excludeEdges=c(F, F, T, F)); print(g)
+#' g<-makeEventDiagram(df$evt, nodeShapeBy=df$by); print(g)
 #'
 #' @export
 
@@ -66,7 +66,8 @@ makeEventDiagram <- function(evt,
     if(length(shapes) < nShapesNeeded) {
       shapes <- rep_len(shapes, nShapesNeeded)
     }
-    nodeShapeValue <- unlist(shapes[as.numeric(as.factor(nodeShapeBy))])
+    nodeShapeBy<-as.factor(nodeShapeBy)
+    nodeShapeValue <- unlist(shapes[as.numeric(nodeShapeBy[, drop = TRUE])])
   }
   nodes <- create_nodes(nodes = nodeNames, type = "event",
                         shape = nodeShapeValue)
