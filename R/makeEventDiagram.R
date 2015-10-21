@@ -71,7 +71,7 @@ makeEventDiagram <- function(evt,
     }
     # get shapes; result should be the same length as nodeNames
     # so we find the unique
-    df <- unique(data.frame(evt=evt, by=by)) %>%
+    df <- unique(data.frame(evt=evt, by=nodeShapeBy)) %>%
       filter(evt %in% nodeNames)
     # test if a event falls under multiple "by" categories. Stop if true.
     if (length(df$evt) > length(nodeNames))
