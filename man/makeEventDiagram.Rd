@@ -5,7 +5,10 @@
 \title{Generating a graph based on an input vector of states}
 \usage{
 makeEventDiagram(evt, nodeShapeBy = NA, graphName = "", ignoreRuns = F,
-  excludeEdges = NA, excludeNodes = c(NA, "NA"), minimalEdgeCount = 0)
+  excludeEdges = NA, excludeNodes = c(NA, "NA"), minimalEdgeCount = 0,
+  shapes = c("rectangle", "oval", "diamond", "egg", "triangle",
+  "parallelogram", "house", "pentagon", "hexagon", "septagon", "octagon",
+  "doubleoctagon", "cds"))
 }
 \arguments{
 \item{evt}{A vector of events, which can be either numeric, char, or factor. The unique
@@ -26,6 +29,9 @@ associated with corresponding event will not be drawn. NA by default.}
 
 \item{minimalEdgeCount}{The minimal number of transition occurances before an edge is drawn.}
 
+\item{shapes}{A character vector of graphviz node shapes. The list will be repeated
+if the number of nodes is larger than the length of the shapes vector.}
+
 \item{excludedNodes}{A vector of names of the nodes to be excluded.}
 }
 \value{
@@ -35,8 +41,8 @@ a DiagrammeR graph object
 Generating a graph based on an input vector of states
 }
 \examples{
-df <- data.frame(evt=c("this", "2", "that", "2"), by=c(1,2,1,3))
+df <- data.frame(evt=c("this", "2", "hi", "that", "2", "3"), by=c(1,2, 1, 1, 2, 2))
 makeEventDiagram(df$evt)
-makeEventDiagram(df$evt, nodeShapeBy=df$by)
+g<-makeEventDiagram(df$evt, nodeShapeBy=df$by); print(g)
 }
 

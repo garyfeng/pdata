@@ -2,6 +2,7 @@
 
 export(backFillNA)
 export(events2df)
+export(gazeHeatmap)
 export(getDistr)
 export(getExtInfo)
 export(gf_createSubgraph)
