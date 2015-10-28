@@ -7,7 +7,7 @@ require ("ggplot2")
 #'   specifications.
 #' @param dframe Data frame containing the data to be used, with at least $x, $y, and $dur
 #' @param pict String giving the base name of the PNG file to be used, e.g., "background.png"
-#' @param location String giving the path of the PNG file to be used, e.g., location=getwd()
+#' @param path String giving the path of the PNG file to be used, e.g., path=getwd()
 #' @param outputtitle Optional argument, allowing the user to specify the output title
 #' @param colormin Optional argument, allowing the user to specify the color corresponding to the lowest value of the heat map
 #' @param colormax Optional argument, allowing the user to specify the color corresponding to the highest value of the heat map
@@ -19,7 +19,7 @@ require ("ggplot2")
 #' @return ggplot object: heat map or fixation map of gaze time overlayed onto a picture read from file
 #'
 #' @examples
-#' gazeHeatmap(tmp, paste(storyName, " Summary", sep=""), location=getwd(),
+#' gazeHeatmap(tmp, paste(storyName, " Summary", sep=""), path=getwd(),
 #'     screendim = screenSize, transparancyLevel = alphaLevel, ngridpoints = 200,
 #'     showFixations = F)
 #' @export
@@ -29,7 +29,7 @@ require ("ggplot2")
 #----------------
 #dframe:            data frame containing the data to be used
 #pict:              string giving the name of the picture file to be used
-#location:          string giving the location of the picture file to be used
+#path:          string giving the path of the picture file to be used
 #outputtitle:       optional argument, allowing the user to specify the output title
 #colormin:          optional argument, allowing the user to specify the color corresponding to the lowest value of the heat map
 #colormax:          optional argument, allowing the user to specify the color corresponding to the highest value of the heat map
@@ -45,7 +45,7 @@ require ("ggplot2")
 
 
 
-gazeHeatmap <- function (dframe, pict, location, outputtitle="User Output", colormin="white", colormax="red4",
+gazeHeatmap <- function (dframe, pict, path, outputtitle="User Output", colormin="white", colormax="red4",
                          screendim=c(1680, 1050), transparancyLevel=0.40, ngridpoints=100,
                          showFixations = F)
 {
@@ -66,8 +66,8 @@ gazeHeatmap <- function (dframe, pict, location, outputtitle="User Output", colo
   if( missing(pict) | !is.character(pict) ){
     stop("Required picture file name is missing or not a string. Terminating program.")
   }
-  if( missing(location) | !is.character(location) ){
-    stop("Required picture file location is missing or not a string. Terminating program.")
+  if( missing(path) | !is.character(path) ){
+    stop("Required picture file path is missing or not a string. Terminating program.")
   }
   if( !is.character(outputtitle) ){
     print("Optional output title is not a string. Using default: UserOutput.")
@@ -105,7 +105,7 @@ gazeHeatmap <- function (dframe, pict, location, outputtitle="User Output", colo
   }
 
   #create complete file name
-  imageFileName <- paste(location, "/", pict, ".png", sep="")
+  imageFileName <- paste(path, "/", pict, ".png", sep="")
   # garyfeng: changed to read from the 'img' directory of the package, see below
   imageFileName <- paste( pict, ".png", sep="")
   # garyfeng: now get the full path to the img file under the library

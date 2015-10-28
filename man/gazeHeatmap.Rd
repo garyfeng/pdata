@@ -5,7 +5,7 @@
 \title{This function reads in a picture file specified by the user, then overlays it with a heat map computed according to user
   specifications.}
 \usage{
-gazeHeatmap(dframe, pict, location, outputtitle = "User Output",
+gazeHeatmap(dframe, pict, path, outputtitle = "User Output",
   colormin = "white", colormax = "red4", screendim = c(1680, 1050),
   transparancyLevel = 0.4, ngridpoints = 100, showFixations = F)
 }
@@ -14,7 +14,7 @@ gazeHeatmap(dframe, pict, location, outputtitle = "User Output",
 
 \item{pict}{String giving the base name of the PNG file to be used, e.g., "background.png"}
 
-\item{location}{String giving the path of the PNG file to be used, e.g., location=getwd()}
+\item{path}{String giving the path of the PNG file to be used, e.g., path=getwd()}
 
 \item{outputtitle}{Optional argument, allowing the user to specify the output title}
 
@@ -38,7 +38,7 @@ This function reads in a picture file specified by the user, then overlays it wi
   specifications.
 }
 \examples{
-gazeHeatmap(tmp, paste(storyName, " Summary", sep=""), location=getwd(),
+gazeHeatmap(tmp, paste(storyName, " Summary", sep=""), path=getwd(),
     screendim = screenSize, transparancyLevel = alphaLevel, ngridpoints = 200,
     showFixations = F)
 }
