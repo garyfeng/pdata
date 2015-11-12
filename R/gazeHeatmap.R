@@ -1,13 +1,14 @@
 require("plyr")
 require("png")
+require("jpeg")
 require ("ggplot2")
 
 
 #' This function reads in a picture file specified by the user, then overlays it with a heat map computed according to user
 #'   specifications.
 #' @param dframe Data frame containing the data to be used, with at least $x, $y, and $dur
-#' @param pict String giving the base name of the PNG file to be used, e.g., "background.png"
-#' @param path String giving the path of the PNG file to be used, e.g., path=getwd()
+#' @param pict String giving the base name of the PNG or JPEG file to be used, e.g., "background.png"
+#' @param path String giving the path of the PNG or JPEG file to be used, e.g., path=getwd()
 #' @param outputtitle Optional argument, allowing the user to specify the output title
 #' @param colormin Optional argument, allowing the user to specify the color corresponding to the lowest value of the heat map
 #' @param colormax Optional argument, allowing the user to specify the color corresponding to the highest value of the heat map
@@ -107,10 +108,10 @@ gazeHeatmap <- function (dframe, pict, path, outputtitle="User Output", colormin
   #create complete file name
   imageFileName <- paste(path, "/", pict, ".png", sep="")
   # garyfeng: changed to read from the 'img' directory of the package, see below
-  imageFileName <- paste( pict, ".png", sep="")
+  # imageFileName <- paste( pict, ".png", sep="")
   # garyfeng: now get the full path to the img file under the library
-  #imageFileName <-system.file("img", imageFileName, package="GFEye")
-  print (imageFileName)
+  # imageFileName <-system.file("img", imageFileName, package="GFEye")
+  # print (imageFileName)
 
   # skip if no image file exists
   if (!file.exists(imageFileName)) {
@@ -119,7 +120,7 @@ gazeHeatmap <- function (dframe, pict, path, outputtitle="User Output", colormin
   }
 
   # read in the image
-  m <- readPNG(imageFileName,native = F)
+  m <- readPNG(imageFileName, native = F)
   imgsize <- dim(m)
 
 
