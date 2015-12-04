@@ -20,6 +20,7 @@
 #' @param ignoreRuns FALSE by default. If TRUE, run-length-encoding will be done on the evt
 #'    vector, so that there are no self-referencial edges.
 #' @param minimalEdgeCount The minimal number of transition occurances before an edge is drawn.
+#' @param deleteIsolatedNodes Do not show isolated nodes (default = T)
 #'
 #' @examples
 #' df <- data.frame(evt=c("this", "2", "hi", "that", "2", "3"), by=c(1,2, 1, 1, 2, 2))
@@ -37,7 +38,8 @@ makeEventDiagram <- function(evt,
                              minimalEdgeCount = 0,
                              shapes = c( "rectangle", "oval", "diamond", "egg", "triangle",
                                          "parallelogram", "house", "pentagon", "hexagon", "septagon",
-                                         "octagon", "doubleoctagon", "cds")
+                                         "octagon", "doubleoctagon", "cds"),
+                             deleteIsolatedNodes = T
                             ) {
   # need to convert factors to char
   evt<-as.character(evt)
@@ -137,6 +139,14 @@ makeEventDiagram <- function(evt,
                        edge_attrs = c("color = gray20",
                                       "arrowsize = 0.5"))
 
+  }
+
+  # delete isolated nodes if deleteIsolatedNodes=T
+  if (deleteIsolatedNodes) {
+    isoNodes <- node_info(gr)[which(node_info(gr)["degree"] == 0), ][, 1]
+    for (n in isoNodes) {
+      gr <- delete_node(gr, node = n)
+    }
   }
 
   # adding graph title; not a function; must do manually
