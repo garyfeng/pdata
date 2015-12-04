@@ -12,9 +12,9 @@ gazeHeatmap(dframe, pict, path, outputtitle = "User Output",
 \arguments{
 \item{dframe}{Data frame containing the data to be used, with at least $x, $y, and $dur}
 
-\item{pict}{String giving the base name of the PNG file to be used, e.g., "background.png"}
+\item{pict}{String giving the base name of the PNG or JPEG file to be used, e.g., "background.png"}
 
-\item{path}{String giving the path of the PNG file to be used, e.g., path=getwd()}
+\item{path}{String giving the path of the PNG or JPEG file to be used, e.g., path=getwd()}
 
 \item{outputtitle}{Optional argument, allowing the user to specify the output title}
 

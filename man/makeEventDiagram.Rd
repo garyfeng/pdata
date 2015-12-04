@@ -8,7 +8,7 @@ makeEventDiagram(evt, nodeShapeBy = NA, graphName = "", ignoreRuns = F,
   excludeEdges = NA, excludeNodes = c(NA, "NA"), minimalEdgeCount = 0,
   shapes = c("rectangle", "oval", "diamond", "egg", "triangle",
   "parallelogram", "house", "pentagon", "hexagon", "septagon", "octagon",
-  "doubleoctagon", "cds"))
+  "doubleoctagon", "cds"), deleteIsolatedNodes = T)
 }
 \arguments{
 \item{evt}{A vector of events, which can be either numeric, char, or factor. The unique
@@ -31,6 +31,8 @@ associated with corresponding event will not be drawn. NA by default.}
 
 \item{shapes}{A character vector of graphviz node shapes. The list will be repeated
 if the number of nodes is larger than the length of the shapes vector.}
+
+\item{deleteIsolatedNodes}{Do not show isolated nodes (default = T)}
 
 \item{excludedNodes}{A vector of names of the nodes to be excluded.}
 }
