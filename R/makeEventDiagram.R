@@ -144,7 +144,6 @@ makeEventDiagram <- function(evt,
   # delete isolated nodes if deleteIsolatedNodes=T
   if (deleteIsolatedNodes) {
     isoNodes <- node_info(gr)[which(node_info(gr)["degree"] == 0), ][, 1]
-    print(isoNodes) #debug
     for (node in isoNodes) {
       gr <- delete_node(gr, node = node)
     }
