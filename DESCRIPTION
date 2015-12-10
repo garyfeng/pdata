@@ -18,6 +18,7 @@ Imports:
     XML,
     muhaz,
     dfat,
+    png,
     DiagrammeR
 Suggests: knitr
 VignetteBuilder: knitr
