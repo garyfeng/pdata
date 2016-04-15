@@ -8,6 +8,9 @@
 #' @return A vector with NAs back filled
 #'
 #' @details see https://gist.github.com/garyfeng/27e7f8e406192a8cb33a
+#' where we compared 3 algorithms: a simple loop, a recursive, and this non-recursive algorithms.
+#' A simple performance comparison is also there. The conclusion is clear, this is about 100X faster
+#' than the loop version, and ~70X faster than the recursive on a 10K list. 
 #'
 #' @export
 

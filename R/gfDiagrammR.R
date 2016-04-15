@@ -12,7 +12,7 @@ gf_createSubgraph <- function (graph, subGraphName="") {
   gsub("digraph", paste("subgraph", subGraphName, sep=" "), graph$dot_code)
 }
 
-#' Great a DOT graph from subgraphs
+#' Create a DOT graph from subgraphs
 #'
 #' @param ... objects that are subgraphs created using gf_createSubgraph(). This can be individually listed
 #'   subgraphs, or a list with subgraphs
